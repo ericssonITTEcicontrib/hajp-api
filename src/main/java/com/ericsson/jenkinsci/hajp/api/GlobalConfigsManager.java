@@ -6,12 +6,13 @@ import jenkins.model.Jenkins;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FilenameUtils;
+import org.jvnet.hudson.reactor.ReactorException;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
-@Log4j2 public class PluginsManager {
+@Log4j2 public class GlobalConfigsManager {
     @Getter private Jenkins jenkins;
 
     /**
@@ -19,7 +20,7 @@ import java.util.Map;
      *
      * @param jenkins the Jenkins instance
      */
-    public PluginsManager(Jenkins jenkins) {
+    public GlobalConfigsManager(Jenkins jenkins) {
         this.jenkins = jenkins;
     }
 
@@ -30,10 +31,10 @@ import java.util.Map;
      * @param pluginName
      * @param fileName
      * @param fileAsByteArray
-     * @throws java.io.IOException
+     * @throws IOException
      */
-    public void updatePluginConfig(String pluginName, String fileName, byte[] fileAsByteArray)
-        throws IOException {
+    public void updateGlobalConfig(String pluginName, String fileName, byte[] fileAsByteArray)
+        throws IOException, ReactorException, InterruptedException {
         Jenkins jenkins = getJenkins();
         File rootDir = jenkins.getRootDir();
         File file;
@@ -42,34 +43,12 @@ import java.util.Map;
 
         // write to disk
         file = new File(rootDir, fileName);
+        log.debug("write to file: " + file.getAbsolutePath());
         Files.write(fileAsByteArray, file);
 
-        // TODO risking operations here: think about other solution.
-/*        // find correct Descriptor
-        id = FilenameUtils.removeExtension(pluginName);
-        d = jenkins.getDescriptor(id);
-
-        if (d == null) {
-            pluginName = pluginName.replace("-", "");
-            pluginName = pluginName.replace(" ", "");
-            d = jenkins.getDescriptor(pluginName);
-        }
-
-        // if it exists, unmarshal the file into the Descriptor(load into
-        // memory)
-        if (d != null) {
-            log.warn("Found Descriptor with id: {} or {}", id, pluginName);
-            try {
-                new XmlFile(file).unmarshal(d);
-            } catch (Exception e) {
-                log.warn("Caught Exception while unmarshalling config file for plugin: {}", id,
-                    e.getMessage());
-            }
-            // restore to null just in case
-            d = null;
-        } else {
-            log.warn("Could not find and load Descriptor with id: {}", id);
-        }*/
+        // reload config
+        log.warn("jenkins.reload()" );
+        jenkins.reload();
     }
 
     /**
@@ -78,15 +57,16 @@ import java.util.Map;
      * method with filename, id and content information extracted and separated.
      *
      * @param filesMap
-     * @throws java.io.IOException
+     * @throws IOException
      */
-    public void updatePluginsConfig(Map<String, byte[]> filesMap) throws IOException {
+    public void updateGlobalConfig(Map<String, byte[]> filesMap)
+        throws IOException, InterruptedException, ReactorException {
         for (Map.Entry<String, byte[]> e : filesMap.entrySet()) {
             String fileName = e.getKey();
             byte[] fileAsByteArray = e.getValue();
 
             String id = FilenameUtils.removeExtension(fileName);
-            updatePluginConfig(id, fileName, fileAsByteArray);
+            updateGlobalConfig(id, fileName, fileAsByteArray);
         }
     }
 }
