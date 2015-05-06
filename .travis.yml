@@ -3,3 +3,5 @@ jdk:
   - oraclejdk8
 
 script: mvn test -B --settings settings.xml
+
+install: mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V --settings settings.xml
