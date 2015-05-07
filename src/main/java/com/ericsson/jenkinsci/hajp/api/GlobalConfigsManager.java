@@ -1,11 +1,9 @@
 package com.ericsson.jenkinsci.hajp.api;
 
 import com.google.common.io.Files;
-import hudson.model.Descriptor;
 import jenkins.model.Jenkins;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.io.FilenameUtils;
 import org.jvnet.hudson.reactor.ReactorException;
 
 import java.io.File;
@@ -25,24 +23,19 @@ import java.util.Map;
     }
 
     /**
-     * write xml file to disk and load the corresponding descriptor(if it
-     * exists)
+     * write xml file to disk and reload the corresponding global config
      *
-     * @param pluginName
      * @param fileName
      * @param fileAsByteArray
      * @throws IOException
      */
-    public void updateGlobalConfig(String pluginName, String fileName, byte[] fileAsByteArray)
+    public void updateGlobalConfig(String fileName, byte[] fileAsByteArray)
         throws IOException, ReactorException, InterruptedException {
         Jenkins jenkins = getJenkins();
         File rootDir = jenkins.getRootDir();
-        File file;
-        String id;
-        Descriptor<?> d;
 
         // write to disk
-        file = new File(rootDir, fileName);
+        File file = new File(rootDir, fileName);
         log.debug("write to file: " + file.getAbsolutePath());
         Files.write(fileAsByteArray, file);
 
@@ -52,8 +45,8 @@ import java.util.Map;
     }
 
     /**
-     * Utility method for sending large number of plugin configuration in one shot.
-     * It takes bundled plugin configuration fro map and passes on to singular processing
+     * Utility method for sending large number of global configurations in one shot.
+     * It takes bundled global configurations from map and passes on to singular processing
      * method with filename, id and content information extracted and separated.
      *
      * @param filesMap
@@ -64,9 +57,7 @@ import java.util.Map;
         for (Map.Entry<String, byte[]> e : filesMap.entrySet()) {
             String fileName = e.getKey();
             byte[] fileAsByteArray = e.getValue();
-
-            String id = FilenameUtils.removeExtension(fileName);
-            updateGlobalConfig(id, fileName, fileAsByteArray);
+            updateGlobalConfig(fileName, fileAsByteArray);
         }
     }
 }
