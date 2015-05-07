@@ -4,7 +4,7 @@
 
     <groupId>com.ericsson.jenkinsci.hajp</groupId>
     <artifactId>hajp-api</artifactId>
-    <version>1.0.14-SNAPSHOT</version>
+    <version>1.0.14</version>
 
     <name>Jenkins High-Availability API Library</name>
     <description>This is the API library for the Jenkins High Availabilty Plugin</description>
