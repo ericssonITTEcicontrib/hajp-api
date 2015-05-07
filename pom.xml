@@ -4,7 +4,7 @@
 
     <groupId>com.ericsson.jenkinsci.hajp</groupId>
     <artifactId>hajp-api</artifactId>
-    <version>1.0.13-SNAPSHOT</version>
+    <version>1.0.13</version>
 
     <name>Jenkins High-Availability API Library</name>
     <description>This is the API library for the Jenkins High Availabilty Plugin</description>
@@ -171,6 +171,10 @@
 		     <goals>
 		       <goal>sign</goal>
 		     </goals>
+                   <configuration>
+                     <executable>gpg</executable>
+                     <passphrase>Werty567</passphrase>
+                   </configuration>
 		   </execution>
 	      </executions>
 	    </plugin>
