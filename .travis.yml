@@ -4,4 +4,4 @@ jdk:
 
 script: mvn test -B --settings settings.xml
 
-install: mvn install -DskipTests=true -Dgpg.skip=true -Dmaven.javadoc.skip=true -B -V --settings settings.xml
+install: mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V --settings settings.xml
